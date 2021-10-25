@@ -1,27 +1,3 @@
-../src/dvhop/model/distance-table.cc: In member function ‘void ns3::dvhop::DistanceTable::AddBeacon(ns3::Ipv4Address, uint16_t, double, double)’:
-../src/dvhop/model/distance-table.cc:55:59: error: cannot bind rvalue reference of type ‘double&&’ to lvalue of type ‘double’
-   55 |           info.SetPosition (std::make_pair<double,double>(xPos, yPos));
-      |                                                           ^~~~
-In file included from /usr/include/c++/9/bits/stl_algobase.h:64,
-                 from /usr/include/c++/9/bits/stl_tree.h:63,
-                 from /usr/include/c++/9/map:60,
-                 from ../src/dvhop/model/distance-table.h:4,
-                 from ../src/dvhop/model/distance-table.cc:1:
-/usr/include/c++/9/bits/stl_pair.h:524:21: note:   initializing argument 1 of ‘constexpr std::pair<typename std::__decay_and_strip<_Tp>::__type, typename std::__decay_and_strip<_T2>::__type> std::make_pair(_T1&&, _T2&&) [with _T1 = double; _T2 = double; typename std::__decay_and_strip<_T2>::__type = double; typename std::__decay_and_strip<_Tp>::__type = double]’
-  524 |     make_pair(_T1&& __x, _T2&& __y)
-      |               ~~~~~~^~~
-../src/dvhop/model/distance-table.cc:57:67: error: cannot bind rvalue reference of type ‘ns3::Ipv4Address&&’ to lvalue of type ‘ns3::Ipv4Address’
-   57 |           m_table.insert (std::make_pair<Ipv4Address, BeaconInfo>(beacon, info));
-      |                                                                   ^~~~~~
-In file included from /usr/include/c++/9/bits/stl_algobase.h:64,
-                 from /usr/include/c++/9/bits/stl_tree.h:63,
-                 from /usr/include/c++/9/map:60,
-                 from ../src/dvhop/model/distance-table.h:4,
-                 from ../src/dvhop/model/distance-table.cc:1:
-/usr/include/c++/9/bits/stl_pair.h:524:21: note:   initializing argument 1 of ‘constexpr std::pair<typename std::__decay_and_strip<_Tp>::__type, typename std::__decay_and_strip<_T2>::__type> std::make_pair(_T1&&, _T2&&) [with _T1 = ns3::Ipv4Address; _T2 = ns3::dvhop::BeaconInfo; typename std::__decay_and_strip<_T2>::__type = ns3::dvhop::BeaconInfo; typename std::__decay_and_strip<_Tp>::__type = ns3::Ipv4Address]’
-  524 |     make_pair(_T1&& __x, _T2&& __y)
-      |               ~~~~~~^~~
-
 In file included from ./ns3/object-base.h:23,
                  from ./ns3/object.h:29,
                  from ./ns3/node.h:26,
