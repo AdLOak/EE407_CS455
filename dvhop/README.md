@@ -14,3 +14,5 @@ $ ./waf --run dvhop-example
 ```
 
 The ```$NS_HOME``` variable is set to the root folder of your NS3.20 installation. In case of the ns-allinone directory structure is ```$NS_ROOT/ns3.20```
+
+Note: Our equivalent to their $NS_HOME directory is the ns-3.30.1 directory. 
