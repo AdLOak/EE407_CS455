@@ -10,6 +10,7 @@
 #include "ns3/netanim-module.h"
 #include <iostream>
 #include <cmath>
+#include "ns3/wifi-mac-helper.h";
 
 using namespace ns3;
 
@@ -180,12 +181,12 @@ DVHopExample::CreateBeacons ()
 void
 DVHopExample::CreateDevices ()
 {
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  WifiHelper wifi = WifiHelper::Default ();
+  WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
   devices = wifi.Install (wifiPhy, wifiMac, nodes);
 
