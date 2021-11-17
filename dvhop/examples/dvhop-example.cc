@@ -66,12 +66,13 @@ private:
 
 int main (int argc, char **argv)
 {
+  /*main function*/
   DVHopExample test;
   if (!test.Configure (argc, argv))
     NS_FATAL_ERROR ("Configuration failed. Aborted.");
 
-  test.Run ();
-  test.Report (std::cout);
+  test.Run (); //run function defined below 
+  test.Report (std::cout); 
   return 0;
 }
 
@@ -108,7 +109,7 @@ void
 DVHopExample::Run ()
 {
 //  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
-  CreateNodes ();
+  CreateNodes (); //function below
   CreateDevices ();
   InstallInternetStack ();
 
@@ -133,7 +134,7 @@ void
 DVHopExample::CreateNodes ()
 {
   std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
-  nodes.Create (size);
+  nodes.Create (size); //size defined above as 10. 
   // Name nodes
   for (uint32_t i = 0; i < size; ++i)
     {
