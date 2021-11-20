@@ -10,7 +10,7 @@
 #include "ns3/netanim-module.h"
 #include <iostream>
 #include <cmath>
-#include "ns3/wifi-mac-helper.h";
+#include "ns3/wifi-mac-helper.h"
 
 using namespace ns3;
 
@@ -66,6 +66,9 @@ private:
 
 int main (int argc, char **argv)
 {
+  CommandLine cmd; 
+  cmd.Parse(argc, argv); 
+
   DVHopExample test;
   if (!test.Configure (argc, argv))
     NS_FATAL_ERROR ("Configuration failed. Aborted.");
@@ -77,8 +80,8 @@ int main (int argc, char **argv)
 
 //-----------------------------------------------------------------------------
 DVHopExample::DVHopExample () :
-  size (10),
-  step (100),
+  size (50),
+  step (50),
   totalTime (10),
   pcap (true),
   printRoutes (true)
@@ -107,8 +110,9 @@ DVHopExample::Configure (int argc, char **argv)
 void
 DVHopExample::Run ()
 {
-//  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
-  CreateNodes ();
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
+  CreateNodes ();  
+
   CreateDevices ();
   InstallInternetStack ();
 
@@ -120,7 +124,9 @@ DVHopExample::Run ()
 
   AnimationInterface anim("animation.xml");
 
-  Simulator::Run ();
+ /* at this point in the simulation the nodes are listed as being created and lists created devices */ 
+
+  Simulator::Run (); //hop count comes as a part of the simulation being run
   Simulator::Destroy ();
 }
 
@@ -132,11 +138,14 @@ DVHopExample::Report (std::ostream &)
 void
 DVHopExample::CreateNodes ()
 {
-  std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
+//  NodeContainer nodes; 
+
+  std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n"; //prints out statement 
   nodes.Create (size);
   // Name nodes
   for (uint32_t i = 0; i < size; ++i)
     {
+	//lists the noces being created 
       std::ostringstream os;
       os << "node-" << i;
       std::cout << "Creating node: "<< os.str ()<< std::endl ;
@@ -148,11 +157,26 @@ DVHopExample::CreateNodes ()
                                  "MinX", DoubleValue (0.0),
                                  "MinY", DoubleValue (0.0),
                                  "DeltaX", DoubleValue (step),
-                                 "DeltaY", DoubleValue (0),
-                                 "GridWidth", UintegerValue (size),
+                                 "DeltaY", DoubleValue (step),
+                                 "GridWidth", UintegerValue (10),
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
+
+/* added code - Print location for each node - for debugging  */
+ std::cout << "POSITIONS OF NODES" << std::endl; 
+ int k = 0; 
+ for(NodeContainer::Iterator j = nodes.Begin (); j != nodes.End (); ++j)
+ {
+	Ptr<Node> object = *j; 
+	Ptr<MobilityModel> position = object->GetObject<MobilityModel> ();
+ 	NS_ASSERT (position != 0); 
+	Vector pos = position->GetPosition (); 
+	std::cout << "node-" << k  << ": x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl; 
+	k += 1;  
+} 
+// nodes print linearly 
+
 }
 
 void
@@ -180,7 +204,7 @@ DVHopExample::CreateBeacons ()
 
 void
 DVHopExample::CreateDevices ()
-{
+{ 
   WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
@@ -217,3 +241,5 @@ DVHopExample::InstallInternetStack ()
       dvhop.PrintRoutingTableAllAt (Seconds (8), routingStream);
     }
 }
+
+
