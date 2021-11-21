@@ -110,7 +110,8 @@ DVHopExample::Configure (int argc, char **argv)
 void
 DVHopExample::Run ()
 {
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
+//NOTE: below line of code since first version of the 
+//  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
   CreateNodes ();  
 
   CreateDevices ();
@@ -154,8 +155,8 @@ DVHopExample::CreateNodes ()
   // Create static grid
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (0.0),
-                                 "MinY", DoubleValue (0.0),
+                                 "MinX", DoubleValue (-100.0),
+                                 "MinY", DoubleValue (-100.0),
                                  "DeltaX", DoubleValue (step),
                                  "DeltaY", DoubleValue (step),
                                  "GridWidth", UintegerValue (10),
@@ -164,7 +165,7 @@ DVHopExample::CreateNodes ()
   mobility.Install (nodes);
 
 /* added code - Print location for each node - for debugging  */
- std::cout << "POSITIONS OF NODES" << std::endl; 
+ std::cout << "\n POSITIONS OF NODES" << std::endl; 
  int k = 0; 
  for(NodeContainer::Iterator j = nodes.Begin (); j != nodes.End (); ++j)
  {
@@ -175,6 +176,7 @@ DVHopExample::CreateNodes ()
 	std::cout << "node-" << k  << ": x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl; 
 	k += 1;  
 } 
+std::cout << " " << std::endl; 
 // nodes print linearly 
 
 }
@@ -241,5 +243,4 @@ DVHopExample::InstallInternetStack ()
       dvhop.PrintRoutingTableAllAt (Seconds (8), routingStream);
     }
 }
-
 
