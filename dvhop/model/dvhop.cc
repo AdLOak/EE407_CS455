@@ -1,5 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
+#include <iostream>
 #include "dvhop.h"
 #include "dvhop-packet.h"
 #include "ns3/log.h"
@@ -12,7 +13,6 @@
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
-
 
 
 NS_LOG_COMPONENT_DEFINE ("DVHopRoutingProtocol");
@@ -159,6 +159,8 @@ namespace ns3 {
 
           //mfcb(p,header,iif);
         }
+
+//	header.SetTtl( header.GetTtl() - 1 ); //ADDED 
 
       //Broadcast local delivery or forwarding
       for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
@@ -431,6 +433,7 @@ namespace ns3 {
                                          m_disTable.GetHopsTo (*addr), //Hop Count
                                          *addr);                       //Beacon Address
               NS_LOG_DEBUG (iface.GetLocal ()<< " Sending Hello...");
+	     // NS_LOG_DEBUG( "Hops to beacon: " << m_disTable.GetHopsTo(*addr)); //doesnt do anything  
               Ptr<Packet> packet = Create<Packet>();
               packet->AddHeader (helloHeader);
               // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
@@ -447,17 +450,27 @@ namespace ns3 {
               Simulator::Schedule (jitter, &RoutingProtocol::SendTo, this , socket, packet, destination);
             }
 
-          /*If this node is a beacon, it should broadcast its position always*/
+//	  Address sourceAddress;
+//	  Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
+//       	  FloodingHeader fHeader;
+//          packet->RemoveHeader (fHeader);
+//	  UpdateHopsTo (fHeader.GetBeaconAddress (), fHeader.GetHopCount () + 1, fHeader.GetXPosition(), fHeader.GetYPosition ());
+//	  uint16_t hops = 0; 
+//	  hops = fHeader.GetHopCount() + 1;   //is null
+    	  //std::cout  << "Hops: " << hops << std::endl;  
+
+//	uint32_t hoCount = RoutingProtocol::ReturnHop(socket); 	  	
+	/*If this node is a beacon, it should broadcast its position always*/
           NS_LOG_DEBUG ("Node "<< iface.GetLocal () << " isBeacon? " << m_isBeacon);
           if (m_isBeacon){
               //Create a HELLO Packet for each known Beacon to this node
               FloodingHeader helloHeader(m_xPosition,                 //X Position
                                          m_yPosition,                 //Y Position
                                          m_seqNo++,                   //Sequence Numbr
-                                         0,                           //Hop Count
+                                        /* hops*/ 0,	 	      //Hop Count
                                          iface.GetLocal ());          //Beacon Address
               std::cout <<__FILE__<< __LINE__ << helloHeader << std::endl;
-
+ //maybe add hop to be printted with above line code
               NS_LOG_DEBUG (iface.GetLocal ()<< " Sending Hello...");
               Ptr<Packet> packet = Create<Packet>();
               packet->AddHeader (helloHeader);
@@ -478,7 +491,6 @@ namespace ns3 {
             }
         }
     }
-
 
     void
     RoutingProtocol::SendTo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination)
@@ -507,10 +519,33 @@ namespace ns3 {
       packet->RemoveHeader (fHeader);
       NS_LOG_DEBUG ("Update the entry for: " << fHeader.GetBeaconAddress ());
       UpdateHopsTo (fHeader.GetBeaconAddress (), fHeader.GetHopCount () + 1, fHeader.GetXPosition (), fHeader.GetYPosition ());
-
-
-
+	uint32_t hops = fHeader.GetHopCount()/* + 1*/; 
+	std::cout << fHeader.GetBeaconAddress() <<  ", Hops: " << hops << std::endl;     
     }
+/*(Below) Functin attempting to return hop count to the beacon HopCount category in SendHello()*/
+    /*    uint32_t
+    RoutingProtocol::ReturnHop(Ptr<Socket> socket)
+    {
+	      Address sourceAddress;
+      Ptr<Packet> packet = socket->RecvFrom (sourceAddress); //Read a single packet from 'socket' and retrieve the 'sourceAddress'
+
+      InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
+      Ipv4Address sender = inetSourceAddr.GetIpv4 ();
+      Ipv4Address receiver = m_socketAddresses[socket].GetLocal ();
+
+      NS_LOG_DEBUG ("sender:           " << sender);
+      NS_LOG_DEBUG ("receiver:         " << receiver);
+
+
+      FloodingHeader fHeader;
+      packet->RemoveHeader (fHeader);
+      NS_LOG_DEBUG ("Update the entry for: " << fHeader.GetBeaconAddress ());
+      UpdateHopsTo (fHeader.GetBeaconAddress (), fHeader.GetHopCount () + 1, fHeader.GetXPosition (), fHeader.GetYPosition ());
+        uint32_t hops = fHeader.GetHopCount(); 
+	return hops;       
+ // std::cout << fHeader.GetBeaconAddress() <<  ", Hops: " << hops << std::endl; 
+	
+    }*/
 
     Ptr<Socket>
     RoutingProtocol::FindSocketWithInterfaceAddress (Ipv4InterfaceAddress addr) const
@@ -539,11 +574,8 @@ namespace ns3 {
 
       if( oldHops > newHops || oldHops == 0) //Update only when a shortest path is found
         m_disTable.AddBeacon (beacon, newHops, x, y);
-    }
 
-
-
-
+   	}
   }
 }
 
