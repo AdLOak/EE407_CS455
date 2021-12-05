@@ -110,8 +110,9 @@ DVHopExample::Configure (int argc, char **argv)
 void
 DVHopExample::Run ()
 {
-//NOTE: below line of code since first version of the 
+//NOTW: below line of code since first version of the 
 //  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
+
   CreateNodes ();  
 
   CreateDevices ();
@@ -155,8 +156,8 @@ DVHopExample::CreateNodes ()
   // Create static grid
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue (-100.0),
-                                 "MinY", DoubleValue (-100.0),
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
                                  "DeltaX", DoubleValue (step),
                                  "DeltaY", DoubleValue (step),
                                  "GridWidth", UintegerValue (10),
@@ -165,6 +166,8 @@ DVHopExample::CreateNodes ()
   mobility.Install (nodes);
 
 /* added code - Print location for each node - for debugging  */
+//mostly for figuring out node locations - for design purposes
+ 
  std::cout << "\n POSITIONS OF NODES" << std::endl; 
  int k = 0; 
  for(NodeContainer::Iterator j = nodes.Begin (); j != nodes.End (); ++j)
@@ -177,29 +180,30 @@ DVHopExample::CreateNodes ()
 	k += 1;  
 } 
 std::cout << " " << std::endl; 
-// nodes print linearly 
+
 
 }
 
 void
 DVHopExample::CreateBeacons ()
 {
-  Ptr<Ipv4RoutingProtocol> proto = nodes.Get (0)->GetObject<Ipv4>()->GetRoutingProtocol ();
+
+  Ptr<Ipv4RoutingProtocol> proto = nodes.Get (8)->GetObject<Ipv4>()->GetRoutingProtocol ();
   Ptr<dvhop::RoutingProtocol> dvhop = DynamicCast<dvhop::RoutingProtocol> (proto);
   dvhop->SetIsBeacon (true);
-  dvhop->SetPosition (123.42, 4534.452);
+  dvhop->SetPosition (400, 0);
 
 
-  proto = nodes.Get (4)->GetObject<Ipv4>()->GetRoutingProtocol ();
+  proto = nodes.Get (24)->GetObject<Ipv4>()->GetRoutingProtocol ();
   dvhop = DynamicCast<dvhop::RoutingProtocol> (proto);
   dvhop->SetIsBeacon (true);
-  dvhop->SetPosition (6663.42, 566.646);
+  dvhop->SetPosition (200, 100);
 
 
-  proto = nodes.Get (9)->GetObject<Ipv4>()->GetRoutingProtocol ();
+  proto = nodes.Get (37)->GetObject<Ipv4>()->GetRoutingProtocol ();
   dvhop = DynamicCast<dvhop::RoutingProtocol> (proto);
   dvhop->SetIsBeacon (true);
-  dvhop->SetPosition (123.42, 9873.45);
+  dvhop->SetPosition (350, 150);
 
 }
 
@@ -212,7 +216,7 @@ DVHopExample::CreateDevices ()
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  WifiHelper wifi;
+  WifiHelper wifi = WifiHelper();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
   devices = wifi.Install (wifiPhy, wifiMac, nodes);
 
@@ -231,7 +235,7 @@ DVHopExample::InstallInternetStack ()
   stack.SetRoutingHelper (dvhop); // has effect on the next Install ()
   stack.Install (nodes);
   Ipv4AddressHelper address;
-  address.SetBase ("10.0.0.0", "255.0.0.0");
+  address.SetBase ("10.0.0.0", "255.255.255.255"); //cahnge in address fixed the ttl error
   interfaces = address.Assign (devices);
 
   Ptr<OutputStreamWrapper> distStream = Create<OutputStreamWrapper>("dvhop.distances", std::ios::out);
