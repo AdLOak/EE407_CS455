@@ -414,7 +414,7 @@ namespace ns3 {
    *   Sequence Number    The node's latest sequence number.
    *   Hop Count                      0
    */
-
+      uint16_t hopCount = 0; 
       for(std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin(); j != m_socketAddresses.end (); ++j)
         {
           Ptr<Socket> socket = j->first;
@@ -432,6 +432,7 @@ namespace ns3 {
                                          m_seqNo++,                    //Sequence Numbr
                                          m_disTable.GetHopsTo (*addr), //Hop Count
                                          *addr);                       //Beacon Address
+	      hopCount = m_disTable.GetHopsTo (*addr); 
               NS_LOG_DEBUG (iface.GetLocal ()<< " Sending Hello...");
 	     // NS_LOG_DEBUG( "Hops to beacon: " << m_disTable.GetHopsTo(*addr)); //doesnt do anything  
               Ptr<Packet> packet = Create<Packet>();
@@ -467,7 +468,7 @@ namespace ns3 {
               FloodingHeader helloHeader(m_xPosition,                 //X Position
                                          m_yPosition,                 //Y Position
                                          m_seqNo++,                   //Sequence Numbr
-                                        /* hops*/ 0,	 	      //Hop Count
+                                        /* hops*/ hopCount,	 	      //Hop Count
                                          iface.GetLocal ());          //Beacon Address
               std::cout <<__FILE__<< __LINE__ << helloHeader << std::endl;
  //maybe add hop to be printted with above line code
