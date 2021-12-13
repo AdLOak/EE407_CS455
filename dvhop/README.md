@@ -1,7 +1,7 @@
 dvhop
 =====
 
-DV-hop positioning algorithm for NS3.20
+Based off the out of date DV-hop positioning algorithm for NS3.20 developed by the user pixki.
 
 ###Original Installation
 Just download ns-allinone-3.20 and then:
@@ -16,8 +16,8 @@ $ ./waf --run dvhop-example
 
 The ```$NS_HOME``` variable is set to the root folder of your NS3.20 installation. In case of the ns-allinone directory structure is ```$NS_ROOT/ns3.20```
 
-
-##Relevant Information for NS3.30:
+-------------
+## Relevant Information for NS3.30 (AdLOak Notes)
 
 ###Installation 
 The installation is as shown before. 
